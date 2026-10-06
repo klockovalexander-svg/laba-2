@@ -1,4 +1,4 @@
-# MatrixDiagonalsComparator
+# # MatrixDiagonalsComparator — основная версия
 
 ## Назначение
 

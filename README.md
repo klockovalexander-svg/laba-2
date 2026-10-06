@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# # MatrixDiagonalsComparator
-=======
-# MatrixDiagonalsComparator - версия разработки
->>>>>>> develop
+# MatrixDiagonalsComparator
 
 ## Назначение
 

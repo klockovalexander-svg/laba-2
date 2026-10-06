@@ -1,4 +1,4 @@
-# MatrixDiagonalsComparator
+# MatrixDiagonalsComparator - версия разработки
 
 ## Назначение
 

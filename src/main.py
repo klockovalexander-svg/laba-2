@@ -1,23 +1,31 @@
-n = int(input("Введите размер матрицы: "))
-matrix = []
+from matrix import calculate_diagonals
 
-main_sum = 0 
-sade_sum = 0 
+try:
+    n = int(input("Введите размер матрицы: "))
+except ValueError:
+    print("Ошибка: размер матрицы должен быть целым числом")
+    exit()
+
+matrix = []
 
 for i in range(n):
     row = []
     for j in range(n):
-        x = float(input())
+        try:
+            x = float(input())
+        except ValueError:
+            print("Ошибка: элемент матрицы должен быть числом")
+            exit()
         row.append(x)
     matrix.append(row)
 
-for i in range(n):
-    main_sum += matrix[i][i]
-    sade_sum += matrix[i][n - 1 - i]
+main_sum, sade_sum = calculate_diagonals(matrix)
 
-if main_sum > sade_sum:
-    print("Главная диагональ больше")
-elif main_sum < sade_sum:
-    print("Побочная диагональ больше")
-else:
+if n <= 0:
+    print("Матрицы не существует")
+elif abs(main_sum - sade_sum) < 0.0000001:
     print("Диагонали равны")
+elif main_sum > sade_sum:
+    print("Главная диагональ больше")
+else:
+    print("Побочная диагональ больше")

@@ -61,6 +61,13 @@ except URLError as error:
 main_sum = result["main_sum"]
 sade_sum = result["side_sum"]
 
+print("Введённая матрица:")
+for row in matrix:
+    print(" ".join(f"{value:.3f}" for value in row))
+
+print("Сумма главной диагонали:", main_sum)
+print("Сумма побочной диагонали:", sade_sum)
+
 if abs(main_sum - sade_sum) < 0.0000001:
     print("Диагонали равны")
 elif main_sum > sade_sum:

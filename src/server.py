@@ -16,6 +16,15 @@ class MatrixHandler(BaseHTTPRequestHandler):
         data = json.loads(body)
 
         matrix = data["matrix"]
+        if len(matrix) == 0:
+            self.send_error(400, "Matrix must not be empty")
+            return
+
+        for row in matrix:
+            if len(row) != len(matrix):
+                self.send_error(400, "Matrix must be square")
+                return
+
         main_sum, side_sum = calculate_diagonals(matrix)
 
         result = {

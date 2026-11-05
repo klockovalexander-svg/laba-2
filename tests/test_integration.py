@@ -4,6 +4,7 @@ import threading
 import unittest
 from http.server import HTTPServer
 from pathlib import Path
+from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
@@ -81,6 +82,11 @@ class TestIntegration(unittest.TestCase):
 
     def test_unsupported_version(self):
         self.check_invalid_matrix([[1]], version=2, status=409)
+
+    def test_calculation_module_failure(self):
+        with patch("server.calculate_diagonals", side_effect=RuntimeError):
+            with patch("server.logging.exception"):
+                self.check_invalid_matrix([[1]], status=503)
 
 
 if __name__ == "__main__":

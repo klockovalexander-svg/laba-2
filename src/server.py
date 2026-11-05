@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import logging
 import math
 
 from matrix import calculate_diagonals
@@ -46,7 +47,12 @@ class MatrixHandler(BaseHTTPRequestHandler):
                     self.send_error(400, "Matrix elements must be numbers")
                     return
 
-        main_sum, side_sum = calculate_diagonals(matrix)
+        try:
+            main_sum, side_sum = calculate_diagonals(matrix)
+        except Exception:
+            logging.exception("Calculation module failed")
+            self.send_error(503, "Calculation module unavailable")
+            return
 
         result = {
             "main_sum": main_sum,

@@ -39,6 +39,7 @@ class MatrixHandler(BaseHTTPRequestHandler):
         self.wfile.write(response)
 
 
-server = HTTPServer(("127.0.0.1", 8000), MatrixHandler)
-print("Сервер запущен")
-server.serve_forever()
+if __name__ == "__main__":
+    server = HTTPServer(("127.0.0.1", 8000), MatrixHandler)
+    print("Сервер запущен")
+    server.serve_forever()

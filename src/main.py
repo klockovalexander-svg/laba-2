@@ -1,6 +1,6 @@
 import json
 from urllib.request import Request, urlopen
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 
 try:
     n = int(input("Введите размер матрицы: "))
@@ -25,7 +25,10 @@ for i in range(n):
         row.append(x)
     matrix.append(row)
 
-data = json.dumps({"matrix": matrix}).encode("utf-8")
+data = json.dumps({
+    "version": 1,
+    "matrix": matrix
+}).encode("utf-8")
 
 request = Request(
     "http://127.0.0.1:8000/compare",
@@ -35,11 +38,24 @@ request = Request(
 )
 
 try:
-    with urlopen(request) as response:
+    with urlopen(request, timeout=5) as response:
         result = json.loads(response.read())
-except URLError:
-    print("Ошибка: не удалось подключиться к серверу. "
-          "Проверьте, запущен ли он.")
+except TimeoutError:
+    print("Ошибка: сервер не ответил за 5 секунд.")
+    exit()
+except HTTPError as error:
+    if error.code == 409:
+        print("Ошибка: версия клиента не поддерживается сервером.")
+    else:
+        print(f"Ошибка сервера: HTTP {error.code}.")
+    error.close()
+    exit()
+except URLError as error:
+    if isinstance(error.reason, TimeoutError):
+        print("Ошибка: сервер не ответил за 5 секунд.")
+    else:
+        print("Ошибка: не удалось подключиться к серверу. "
+              "Проверьте, запущен ли он.")
     exit()
 
 main_sum = result["main_sum"]

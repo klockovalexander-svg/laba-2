@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import math
 
 from matrix import calculate_diagonals
 
@@ -11,19 +12,39 @@ class MatrixHandler(BaseHTTPRequestHandler):
         self.wfile.write(b"Server works")
 
     def do_POST(self):
-        length = int(self.headers["Content-Length"])
-        body = self.rfile.read(length)
-        data = json.loads(body)
+        try:
+            length = int(self.headers["Content-Length"])
+            body = self.rfile.read(length)
+            data = json.loads(body)
+            matrix = data["matrix"]
+        except (TypeError, ValueError, KeyError, UnicodeDecodeError):
+            self.send_error(400, "Invalid JSON or missing matrix")
+            return
 
-        matrix = data["matrix"]
+        if type(data.get("version")) is not int or data["version"] != 1:
+            self.send_error(409, "Unsupported request version")
+            return
+
+        if not isinstance(matrix, list):
+            self.send_error(400, "Matrix must be an array")
+            return
         if len(matrix) == 0:
             self.send_error(400, "Matrix must not be empty")
             return
 
         for row in matrix:
-            if len(row) != len(matrix):
+            if not isinstance(row, list) or len(row) != len(matrix):
                 self.send_error(400, "Matrix must be square")
                 return
+            for value in row:
+                try:
+                    valid = (type(value) in (int, float) and
+                             math.isfinite(value))
+                except OverflowError:
+                    valid = False
+                if not valid:
+                    self.send_error(400, "Matrix elements must be numbers")
+                    return
 
         main_sum, side_sum = calculate_diagonals(matrix)
 

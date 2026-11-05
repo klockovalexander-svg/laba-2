@@ -20,7 +20,7 @@ class TestIntegration(unittest.TestCase):
 
         try:
             port = server.server_address[1]
-            data = json.dumps({"matrix": [[2, 4], [3, 1]]})
+            data = json.dumps({"version": 1, "matrix": [[2, 4], [3, 1]]})
             request = Request(
                 f"http://127.0.0.1:{port}/compare",
                 data=data.encode("utf-8"),
@@ -38,14 +38,15 @@ class TestIntegration(unittest.TestCase):
             thread.join()
             server.server_close()
 
-    def check_invalid_matrix(self, matrix):
+    def check_invalid_matrix(self, matrix, raw=None, version=1, status=400):
         server = HTTPServer(("127.0.0.1", 0), MatrixHandler)
         thread = threading.Thread(target=server.serve_forever)
         thread.start()
 
         try:
             port = server.server_address[1]
-            data = json.dumps({"matrix": matrix})
+            data = raw if raw is not None else json.dumps(
+                {"version": version, "matrix": matrix})
             request = Request(
                 f"http://127.0.0.1:{port}/compare",
                 data=data.encode("utf-8"),
@@ -56,7 +57,7 @@ class TestIntegration(unittest.TestCase):
             with self.assertRaises(HTTPError) as error:
                 urlopen(request, timeout=5)
 
-            self.assertEqual(error.exception.code, 400)
+            self.assertEqual(error.exception.code, status)
             error.exception.close()
         finally:
             server.shutdown()
@@ -68,6 +69,18 @@ class TestIntegration(unittest.TestCase):
 
     def test_non_square_matrix(self):
         self.check_invalid_matrix([[2, 4]])
+
+    def test_non_numeric_element(self):
+        self.check_invalid_matrix([["a"]])
+
+    def test_invalid_matrix_type(self):
+        self.check_invalid_matrix(None)
+
+    def test_malformed_json(self):
+        self.check_invalid_matrix(None, raw="{invalid")
+
+    def test_unsupported_version(self):
+        self.check_invalid_matrix([[1]], version=2, status=409)
 
 
 if __name__ == "__main__":

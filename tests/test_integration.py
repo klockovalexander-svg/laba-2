@@ -1,5 +1,8 @@
 import json
+import shutil
+import subprocess
 import sys
+import tempfile
 import threading
 import unittest
 from http.server import HTTPServer
@@ -87,6 +90,26 @@ class TestIntegration(unittest.TestCase):
         with patch("server.calculate_diagonals", side_effect=RuntimeError):
             with patch("server.logging.exception"):
                 self.check_invalid_matrix([[1]], status=503)
+
+    def test_missing_calculation_module(self):
+        with patch("server.calculate_diagonals", None):
+            self.check_invalid_matrix([[1]], status=503)
+
+    def test_server_import_when_matrix_file_missing(self):
+        source = Path(__file__).resolve().parents[1] / "src" / "server.py"
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "server.py"
+            shutil.copyfile(source, target)
+            script = (
+                "import runpy, sys; "
+                "module = runpy.run_path(sys.argv[1]); "
+                "assert module['calculate_diagonals'] is None"
+            )
+            result = subprocess.run(
+                [sys.executable, "-I", "-c", script, str(target)],
+                capture_output=True, text=True, timeout=10
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":

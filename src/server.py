@@ -3,7 +3,13 @@ import json
 import logging
 import math
 
-from matrix import calculate_diagonals
+try:
+    from matrix import calculate_diagonals
+except ModuleNotFoundError as error:
+    if error.name != "matrix":
+        raise
+    calculate_diagonals = None
+    logging.error("Calculation module is missing")
 
 
 class MatrixHandler(BaseHTTPRequestHandler):
@@ -46,6 +52,10 @@ class MatrixHandler(BaseHTTPRequestHandler):
                 if not valid:
                     self.send_error(400, "Matrix elements must be numbers")
                     return
+
+        if calculate_diagonals is None:
+            self.send_error(503, "Calculation module unavailable")
+            return
 
         try:
             main_sum, side_sum = calculate_diagonals(matrix)

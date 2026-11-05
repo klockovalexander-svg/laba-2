@@ -8,6 +8,10 @@ except ValueError:
     print("Ошибка: размер матрицы должен быть целым числом")
     exit()
 
+if n <= 0:
+    print("Матрицы не существует")
+    exit()
+
 matrix = []
 
 for i in range(n):
@@ -40,9 +44,7 @@ except URLError:
 main_sum = result["main_sum"]
 sade_sum = result["side_sum"]
 
-if n <= 0:
-    print("Матрицы не существует")
-elif abs(main_sum - sade_sum) < 0.0000001:
+if abs(main_sum - sade_sum) < 0.0000001:
     print("Диагонали равны")
 elif main_sum > sade_sum:
     print("Главная диагональ больше")

@@ -38,7 +38,8 @@ try:
     with urlopen(request) as response:
         result = json.loads(response.read())
 except URLError:
-    print("Ошибка: не удалось подключиться к серверу. Проверьте, запущен ли он.")
+    print("Ошибка: не удалось подключиться к серверу. "
+          "Проверьте, запущен ли он.")
     exit()
 
 main_sum = result["main_sum"]

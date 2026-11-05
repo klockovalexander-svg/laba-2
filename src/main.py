@@ -1,4 +1,6 @@
-from matrix import calculate_diagonals
+import json
+from urllib.request import Request, urlopen
+from urllib.error import URLError
 
 try:
     n = int(input("Введите размер матрицы: "))
@@ -19,7 +21,24 @@ for i in range(n):
         row.append(x)
     matrix.append(row)
 
-main_sum, sade_sum = calculate_diagonals(matrix)
+data = json.dumps({"matrix": matrix}).encode("utf-8")
+
+request = Request(
+    "http://127.0.0.1:8000/compare",
+    data=data,
+    headers={"Content-Type": "application/json"},
+    method="POST"
+)
+
+try:
+    with urlopen(request) as response:
+        result = json.loads(response.read())
+except URLError:
+    print("Ошибка: не удалось подключиться к серверу. Проверьте, запущен ли он.")
+    exit()
+
+main_sum = result["main_sum"]
+sade_sum = result["side_sum"]
 
 if n <= 0:
     print("Матрицы не существует")

@@ -1,0 +1,35 @@
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import json
+
+from matrix import calculate_diagonals
+
+
+class MatrixHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Server works")
+
+    def do_POST(self):
+        length = int(self.headers["Content-Length"])
+        body = self.rfile.read(length)
+        data = json.loads(body)
+
+        matrix = data["matrix"]
+        main_sum, side_sum = calculate_diagonals(matrix)
+
+        result = {
+            "main_sum": main_sum,
+            "side_sum": side_sum
+        }
+        response = json.dumps(result).encode("utf-8")
+
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(response)
+
+
+server = HTTPServer(("127.0.0.1", 8000), MatrixHandler)
+print("Сервер запущен")
+server.serve_forever()

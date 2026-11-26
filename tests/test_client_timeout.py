@@ -49,6 +49,23 @@ class TestClientTimeout(unittest.TestCase):
         self.assertIn("Сумма главной диагонали: 5", output.getvalue())
         self.assertIn("Сумма побочной диагонали: 5", output.getvalue())
 
+    def test_regression_main_diagonal_greater(self):
+        self.check_comparison(7, 3, "Главная диагональ больше")
+
+    def test_regression_side_diagonal_greater(self):
+        self.check_comparison(3, 7, "Побочная диагональ больше")
+
+    def check_comparison(self, main_sum, side_sum, message):
+        output = io.StringIO()
+        path = Path(__file__).resolve().parents[1] / "src" / "main.py"
+        body = f'{{"main_sum": {main_sum}, "side_sum": {side_sum}}}'
+        with patch("builtins.input", side_effect=["2", "2", "4", "3", "1"]):
+            response = io.BytesIO(body.encode())
+            with patch("urllib.request.urlopen", return_value=response):
+                with redirect_stdout(output):
+                    runpy.run_path(str(path), run_name="__main__")
+        self.assertIn(message, output.getvalue().splitlines())
+
 
 if __name__ == "__main__":
     unittest.main()

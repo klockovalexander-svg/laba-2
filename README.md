@@ -10,6 +10,9 @@
 | `src/server.py` | Обработка HTTP-запросов, проверка входных данных и возврат ответа в JSON |
 | `src/matrix.py` | Вычисление сумм главной и побочной диагоналей |
 | `tests/` | Модульные, интеграционные и регрессионные проверки |
+| `examples/compare.json` | Пример запроса для матрицы с суммами диагоналей 3 и 7 |
+| `tools/check.ps1` | Запуск тестирования, покрытия и проверки стиля в PowerShell |
+| `.coveragerc` и `requirements-dev.txt` | Настройки покрытия и зависимости для проверок |
 | `docs/` | Описание алгоритма, архитектуры, интеграции и тестирования |
 | `.github/workflows/` | Автоматические проверки GitHub Actions |
 
@@ -45,11 +48,13 @@ python -m unittest discover -s tests -k regression -v
 Измерение покрытия с учётом ветвлений и проверка стиля:
 
 ```bash
-python -m pip install coverage flake8
-python -m coverage run --branch --source=src -m unittest discover -s tests
-python -m coverage report -m --fail-under=75
+python -m pip install -r requirements-dev.txt
+python -m coverage run -m unittest discover -s tests
+python -m coverage report
 python -m flake8 src tests --count
 ```
+
+Те же проверки можно запустить в PowerShell командой `./tools/check.ps1`.
 
 ### Результаты версии v1.1.0
 

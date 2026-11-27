@@ -62,7 +62,7 @@ python -m flake8 src tests --count
 
 - [Результат CI](https://github.com/klockovalexander-svg/laba-2/actions/runs/45888943795).
 - [Интеграционные тесты и отчёт о покрытии](https://github.com/klockovalexander-svg/laba-2/actions/runs/45888943663).
-- [План тестирования](docs/testing_lab4.md), [метрики](docs/testing_metrics.md), [сравнение методов](docs/testing_methods.md) и [инспекция кода](docs/code_review.md).
+- [План тестирования](docs/testing.md), [метрики](docs/testing_metrics.md), [сравнение методов](docs/testing_methods.md) и [инспекция кода](docs/code_review.md).
 
 ## Ветвление
 
